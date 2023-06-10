@@ -14,13 +14,13 @@ body * {
     padding: 0.25rem 0.75rem;
 }
 
-.sidebar-body {
+.sidebar-body, .green-block{
     background-color: #06603A;
     font-size: 1rem;
     color: #F0EFF4;
 }
 
-.sidebar-body a {
+.sidebar-body a, .green-block a {
     color: #F0EFF4;
     text-decoration:none;;
 }
@@ -98,4 +98,28 @@ button.action-button {
 button.action-button:hover {
     background-color: #A14028;
     color:#FFF;
+}
+
+.green-block input {
+    border: solid #F0EFF4;
+    background-color: #05472B;
+    color:#F0EFF4;
+    padding: 0 0.25rem;
+    border-radius: 0.25rem;
+}
+.green-block input:focus {
+    outline:none;
+}
+
+.go-back-icon::before {
+    content:"";
+    background-image: url(/images/icons/chevron-down.svg);
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-size: 1.2rem;
+    transition: none;
+    margin-right:0.25rem;
+    transform: rotate(90deg);
 }
