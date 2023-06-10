@@ -1,0 +1,101 @@
+:root {
+    --content: "";
+}
+
+body {
+    background-color: #F0EFF4;
+}
+
+body * {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.sidebar-body h4 {
+    padding: 0.25rem 0.75rem;
+}
+
+.sidebar-body {
+    background-color: #06603A;
+    font-size: 1rem;
+    color: #F0EFF4;
+}
+
+.sidebar-body a {
+    color: #F0EFF4;
+    text-decoration:none;;
+}
+
+.sidebar-content, .sidebar-block .accordion-button {
+    padding: 0.25rem 0.75rem;
+}
+
+.sidebar-content a span {
+    transform:translate(-0.75rem, -0.25rem);
+}
+
+.sidebar-text {
+    margin: auto 0;
+    padding-left: 0.5rem;
+    font-weight:300;
+}
+
+
+.sidebar-content:hover, .sidebar-block .accordion-button:hover, .log-out-cover:hover{
+    background-color: #05472B;
+}
+
+.sidebar-accordion {
+    cursor: pointer;
+}
+
+.sidebar-accordion span, .sidebar-accordion img {
+    pointer-events:none;
+    user-select:none;
+}
+
+.sidebar-block button, .log-out-cover button {
+    background-color:transparent;
+    border: none;
+    color: #F0EFF4;
+}
+button {
+    border: none;
+}
+
+.sidebar-block .accordion-button::after, .sidebar-block .accordion-button:not(.collapsed)::after {
+        background-image: url(/images/icons/chevron-down.svg);
+}
+.sidebar-block .accordion-button::after {
+    content: var(--content);
+}
+.sidebar-block .accordion-button:not(.collapsed) {
+    color: #FFF;
+    background-color: #05472B;
+    box-shadow: none;
+}
+
+.sidebar-block .accordion-button:focus {
+    box-shadow: none;
+}
+
+.sidebar-block .accordion-collapse {
+    background-color: #05472B;
+    padding: 0.5rem 0;
+}
+.sidebar-block .accordion-collapse .sidebar-content:hover {
+    color: #FFF;
+}
+
+.account hr{
+    opacity:1;
+    margin: 0 0.75rem;
+}
+
+button.action-button {
+    background-color: #EE6C4D;
+    color: #F0EFF4;
+}
+button.action-button:hover {
+    background-color: #A14028;
+    color:#FFF;
+}
