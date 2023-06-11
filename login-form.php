@@ -2,11 +2,15 @@
     <title>Login</title>
 </head>
 <body>
+    <?php
+        session_start();
+        if(isset($_SESSION['user'])) header('Location: index.php');
+    ?>
     <div class="container">
         <div class="row">
            <div class="col-6 mx-auto green-block p-3 vh-100">
                <a class="go-back-icon align-items-center d-flex" href="">Go back</a>
-               <form action="php/scripts/login.php">
+               <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
                     <div class="row">
                         <h4 class="mt-3">Register</h4>
                         <div class="col-6">
@@ -33,10 +37,11 @@
                         <div class="col-12 mt-3 d-flex">
                             <button class="action-button w-50 py-2 mx-auto" type="submit">Register</button>
                         </div>
+                        <input type="hidden" name="registration">
                     </div>
                </form>
-
-               <form action="php/scripts/login.php">
+               <?php include('php/scripts/registration.php') ?>
+               <form action="login-form.php" method="post">
                    <div class="row">
                        <h4 class="mt-3">Login</h4>
 
@@ -51,8 +56,10 @@
                        <div class="col-12 mt-3 d-flex">
                            <button class="action-button w-50 py-2 mx-auto" type="submit">Login</button>
                        </div>
+                       <input type="hidden" name="login">
                    </div>
                </form>
+               <?php include('php/scripts/login.php') ?>
             </div>
         </div>
     </div>

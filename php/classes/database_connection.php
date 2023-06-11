@@ -5,13 +5,13 @@
         private static $password = 'toor';
         private static $dbname = 'WPRG_Project';
 
-        private static $connection_resource;
+        private $connection_resource;
 
         private static $instance;
         private function __constructor() {}
-        private static function connect() {
+        private function connect() {
             try {
-                $connection_resource = new mysqli(self::$host, self::$username, self::$password, self::$dbname);
+                $this->connection_resource = new mysqli(self::$host, self::$username, self::$password, self::$dbname);
             } catch(mysqli_sql_exception $e) {
                 return false;
             }
@@ -19,7 +19,7 @@
         }
         private function __clone() {}
 
-        static function getInstance() {
+        public static function get_instance() {
             if (is_null(self::$instance)) {
                 self::$instance = new database_connection();
                 if(!self::$instance->connect()) {
@@ -27,5 +27,9 @@
                 }
             }
             return self::$instance;
+        }
+
+        public function get_resource() {
+            return $this->connection_resource;
         }
     }
