@@ -2,7 +2,6 @@
     require_once('php/classes/database_connection.php');
     require_once('php/classes/user_dao.php');
     require_once('php/classes/user.php');
-    session_start();
 
     if($_SERVER['REQUEST_METHOD'] != 'POST' || !isset($_POST['login']))
         return;
@@ -31,4 +30,4 @@
     }
 
     $_SESSION['user'] = $user;
-    header('Location: index.php');
+    header('Location: departments.php');
