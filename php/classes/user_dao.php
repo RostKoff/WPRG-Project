@@ -36,8 +36,48 @@
                 : false;
         }
 
-        function get_all_users() {
-            $result = $this->db_resource->query('SELECT name, surname, email FROM users');
-            return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : false;
+        public function get_all_users() {
+            $result = $this->db_resource->query('SELECT id, name, surname, email FROM users');
+            $users = [];
+            while($fetched = $result->fetch_assoc()) {
+                $user = new user();
+                $users[] = $user->name($fetched['name'])->id($fetched['id'])->surname($fetched['surname'])->email($fetched['email']);
+            }
+            return count($users) > 0 ? $users : false;
+        }
+
+        public function get_users_from_departments($departments_list) {
+            $str = implode(',',$departments_list);
+            try {
+                $query = "SELECT u.id, u.name, u.surname FROM departments_users
+                                JOIN users AS u ON users_id = u.id 
+                                WHERE departments_id IN ($str)";
+                $result = $this->db_resource()->query($query);
+                $users = [];
+                while($row = $result->fetch_assoc()) {
+                    $user = new user();
+                    $users = $user->id($row['u.id'])->name($row['u.name']->surname($row['u.surname']));
+                }
+                return $users;
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+
+        public function get_by_id($id) {
+            try {
+                $stmt = $this->db_resource->prepare('SELECT id, name, surname, email FROM users WHERE id = ?');
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $stmt->bind_result($id, $name, $surname, $email);
+                $stmt->store_result();
+                $user = new user();
+                $stmt->fetch();
+                $num_rows = $stmt->num_rows();
+                $stmt->close();
+                return $num_rows ? $user->id($id)->name($name)->surname($surname)->email($email) : false;
+            } catch(mysqli_sql_exception $e) {
+                return false;
+            }
         }
     }

@@ -2,7 +2,7 @@
     if($_SERVER['REQUEST_METHOD'] !== 'POST')
         return;
 
-    if(!isset($_POST['dep_name'], $_POST['owner']) || empty($_POST['dep_name']) || empty($_POST['owner'])) {
+    if(!isset($_POST['dep_name'], $_POST['owner'])) {
         echo '<p>Make sure all values are entered!</p>';
         return;
     }
@@ -13,7 +13,6 @@
         echo '<p>This department name was already taken!</p>';
         return;
     }
-
     $departments_dao->add_department($_POST['dep_name'], $_POST['owner'] !== 'none' ? $_POST['owner'] : null);
 
     if($departments_dao === false) {

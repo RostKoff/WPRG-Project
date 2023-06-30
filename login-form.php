@@ -4,12 +4,13 @@
 <body>
     <?php
         session_start();
-        if(isset($_SESSION['user'])) header('Location: index.php');
+        require_once('php/classes/page_content_manager.php');
+        if(isset($_SESSION['user'])) header('Location: departments.php');
     ?>
     <div class="container">
         <div class="row">
            <div class="col-6 mx-auto green-block p-3 vh-100">
-               <a class="go-back-icon align-items-center d-flex" href="">Go back</a>
+               <a class="go-back-icon align-items-center d-flex" href="<?php echo page_content_manager::get_last_page() ?>">Go back</a>
                <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
                     <div class="row">
                         <h4 class="mt-3">Register</h4>

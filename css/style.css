@@ -15,9 +15,9 @@ body * {
 }
 
 .sidebar-body, .green-block{
-    background-color: #06603A;
+    background-color: #06603A !important;
     font-size: 1rem;
-    color: #F0EFF4;
+    color: #F0EFF4 !important;
 }
 
 .sidebar-body a, .green-block a {
@@ -40,8 +40,8 @@ body * {
 }
 
 
-.sidebar-content:hover, .sidebar-block .accordion-button:hover, .log-out-cover:hover{
-    background-color: #05472B;
+.sidebar-content:hover, .sidebar-block .accordion-button:hover, .log-out-cover:hover, .green-hover:hover{
+    background-color: #05472B !important;
 }
 
 .sidebar-accordion {
@@ -53,13 +53,9 @@ body * {
     user-select:none;
 }
 
-.sidebar-block button, .log-out-cover button {
-    background-color:transparent;
-    border: none;
-    color: #F0EFF4;
-}
 button {
     border: none;
+    background-color:transparent;
 }
 
 .sidebar-block .accordion-button::after, .sidebar-block .accordion-button:not(.collapsed)::after {
@@ -100,12 +96,19 @@ button.action-button:hover {
     color:#FFF;
 }
 
-.green-block input {
+.green-block input, .green-block .readonly-input {
     border: solid #F0EFF4;
     background-color: #05472B;
     color:#F0EFF4;
     padding: 0 0.25rem;
     border-radius: 0.25rem;
+}
+/*.green-block .readonly-input {*/
+/*   color: rgba(240, 239, 244, 0.6);*/
+/*   user-select:none;*/
+/*}*/
+.green-block .readonly {
+    color: rgba(240, 239, 244, 0.6);
 }
 .green-block input:focus {
     outline:none;
@@ -122,4 +125,44 @@ button.action-button:hover {
     transition: none;
     margin-right:0.25rem;
     transform: rotate(90deg);
+}
+.drop-menu {
+    background-color: #06603A !important;
+    border-radius: 0 !important;
+    color:#F0EFF4 !important;
+    padding: 0.25rem 0 !important;
+}
+
+.add-department {
+    border: #06603A dashed;
+    color: #071013;
+}
+.add-department:hover {
+    border:none;
+    background-color: #06603A;
+    color: #F0EFF4;
+}
+
+.green-block .selectize-input, .green-block .selectize-dropdown {
+    color:#F0EFF4;
+    border: solid #F0EFF4 !important;
+    box-shadow:none !important;
+    background: #05472B none !important;
+    font-size:inherit;
+}
+.green-block .selectize-input {
+    padding: 0.25rem;
+}
+.green-block .selectize-dropdown:hover {
+    background-color:pink;
+}
+.green-block .selectize-input input {
+    color:#F0EFF4;
+}
+
+input, textarea {
+    border: solid 0.20rem #06603A;
+}
+input:focus, textarea {
+    outline:none;
 }

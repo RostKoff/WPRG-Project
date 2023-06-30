@@ -10,6 +10,8 @@
 		require_once('php/classes/departments_dao.php');
 		session_start();
 		page_content_manager::define_user_type();
+		$user_dao = new user_dao(database_connection::get_instance()->get_resource());
+		$users = $user_dao->get_all_users();
 	?>
 	<div class="container-fluid">
 		<div class="row">
@@ -17,7 +19,7 @@
 			<div class="col">
 				<div class="container">
 					<h1 class="text-center">Departments</h1>
-					<?php echo include('php/scripts/add_department.php') ?>
+					<?php include('php/scripts/add_department.php') ?>
 					<div class="row pt-3">
 						<?php
 						$departments_dao = new departments_dao(database_connection::get_instance()->get_resource());
@@ -32,7 +34,7 @@
 									</svg>
 								</div>
 								<h4><?php echo $department['title'] ?></h4>
-								<a href="" class="">
+								<a href="calendar.php?id=<?php echo $department['id'] ?>" class="">
 									<span class="z-1 w-100 h-100 top-50 left-50 translate-middle position-absolute"></span>
 								</a>
 								<button data-bs-toggle="dropdown" aria-expanded="false" class="z-2 position-absolute end-0 top-0 me-2 mt-2 p-0">
@@ -45,7 +47,11 @@
 								<ul class="drop-menu dropdown-menu">
 									<li class="px-2 position-relative py-1 green-hover">Open “Backlog” page<a href=""><span class="position-absolute top-50 start-50 w-100 h-100 translate-middle"></span></a></li>
 									<li class="px-2 position-relative py-1 green-hover">Open “Users” page<a href=""><span class="position-absolute top-50 start-50 w-100 h-100 translate-middle"></span></a></li>
-									<li class="px-2 d-flex py-1 mt-2"><button class="mx-auto action-button">Request to join</button></li>
+
+										<li class="px-2 d-flex py-1 mt-2">
+											<form class="mx-auto" action="request_to_join.php" method="POST"><input
+													type="hidden" name="department_id" value="<?php echo $department['id'] ?>"><button class=" action-button">Request to join</button></form>
+										</li>
 								</ul>
 							</div>
 						</div>
@@ -77,19 +83,14 @@
 												$results = $user_dao->get_all_users();
 												if(!($results === false))
 													foreach($results as $result) {
-														$full_name = $result['name']." ".$result['surname'];
-														$email = $result['email'];
-														echo "<option value='$email'>$full_name</option>";
+														$full_name = $result->get_name()." ".$result->get_surname();
+														$id = $result->get_id();
+														echo "<option value='$id'>$full_name</option>";
 													}
 												?>
 											</select>
-											<input type="submit">
+											<button class="mt-2 action-button px-5 py-2" type="submit">Add</button>
 										</form>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-										<button type="button" class="btn btn-primary">Save changes</button>
-									</div>
 								</div>
 							</div>
 						</div>

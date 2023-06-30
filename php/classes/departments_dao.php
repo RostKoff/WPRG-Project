@@ -14,9 +14,19 @@ class departments_dao {
         }
         return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : false;
     }
+
+
+    public function get_specific_department($user_id) {
+        $query = "SELECT d.owner_id, departments_id, d.title FROM departments_users
+                             JOIN departments AS d ON departments_id = d.id
+                             WHERE users_id = $user_id";
+        $result = $this->db_resource->query($query);
+        return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : false;
+    }
+
     public function add_department($title, $owner_id = null): bool
     {
-        if($owner_id = null) {
+        if($owner_id != null) {
             $stmt = $this->db_resource->prepare('INSERT INTO departments (title, owner_id) VALUES (?,?)');
             $stmt->bind_param('si', $title, $owner_id);
         }
@@ -26,6 +36,19 @@ class departments_dao {
         }
 
         return !($stmt->execute() === false);
+    }
+
+    public function get_by_id($id) {
+        try {
+            $stmt = $this->db_resource->prepare('SELECT id, title, owner_id FROM departments WHERE id = ?');
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result->num_rows > 0 ? $result->fetch_assoc() : false;
+        } catch(mysqli_sql_exception $e) {
+            return false;
+        }
     }
 
     public function already_exists($title): bool
