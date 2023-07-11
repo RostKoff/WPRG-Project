@@ -14,12 +14,19 @@
         return;
     }
 
-    $departments_dao = new departments_dao(database_connection::get_instance()->get_resource());
-    if(!$department = $departments_dao->get_by_id($_GET['id'])) {
+    $instance = database_connection::get_instance();
+    if(empty($instance))
+        echo '<h1>Error! Unable get information!</h1>';
+    $db_resource = $instance->get_resource();
+
+
+$departments_dao = new departments_dao($db_resource);
+    $current_dep = $departments_dao->get_by_id($_GET['id']);
+    if(is_null($current_dep)) {
         echo '<h1>Department not found!</h1>';
         return;
     }
-    $ticket_dao = new ticket_dao(database_connection::get_instance()->get_resource());
+    $ticket_dao = new ticket_dao($db_resource);
     $tickets = $ticket_dao->get_by_dep_id($_GET['id'], false);
 ?>
 
@@ -30,6 +37,9 @@
             <div class="container">
                 <h1 class="text-center">Backlog</h1>
                 <div class="row pt-3">
+                    <?php if(empty($tickets)): ?>
+                    <h3 class="text-center">Backlog is clear</h3>
+                    <?php else: ?>
                     <table>
                         <tr>
                             <th>title</th>
@@ -47,19 +57,18 @@
                             <td><?php echo $ticket->get_title() ?></td>
                             <td><?php echo $ticket->get_priority() ?></td>
                             <td><?php
-                                    $departments_dao = new departments_dao(database_connection::get_instance()->get_resource());
-                                    $department = $departments_dao->get_by_id($ticket->get_department_id());
-                                    echo $department['title'];
-                                ?> </td>
+                                    echo $current_dep->get_title();
+                                ?>
+                            </td>
                             <td><?php
-                                    $user_dao = new user_dao(database_connection::get_instance()->get_resource());
+                                    $user_dao = new user_dao($db_resource);
                                     $user = $user_dao->get_by_id($ticket->get_reporter_id());
                                     echo $user->get_name()." ".$user->get_surname();
                                 ?></td>
                             <td>
                                 <?php
                                     if(!empty($ticket->get_assignee_id())) {
-                                        $user_dao = new user_dao(database_connection::get_instance()->get_resource());
+                                        $user_dao = new user_dao($db_resource);
                                         $user = $user_dao->get_by_id($ticket->get_assignee_id());
                                         echo $user->get_name()." ".$user->get_surname();
                                     }
@@ -90,6 +99,7 @@
                         </tr>
                         <?php endforeach; ?>
                     </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

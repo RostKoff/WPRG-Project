@@ -11,13 +11,19 @@ if($_SERVER['REQUEST_METHOD'] !== 'GET') {
     echo '<h1>Ticket not found!</h1>';
     return;
 }
-$ticket_dao = new ticket_dao(database_connection::get_instance()->get_resource());
+
+$instance = database_connection::get_instance();
+if(empty($instance))
+    echo '<h1>Error! Unable get information!</h1>';
+$db_resource = $instance->get_resource();
+
+$ticket_dao = new ticket_dao($db_resource);
 if(!$ticket = $ticket_dao->get_by_id($_GET['id'])) {
     echo '<h1>Ticket not found!</h1>';
     return;
 }
-$department_dao = new departments_dao(database_connection::get_instance()->get_resource());
-$department = $department_dao->get_by_id($ticket->get_department_id());
+$department_dao = new departments_dao($db_resource);
+$current_dep = $department_dao->get_by_id($ticket->get_department_id());
 ?>
     <div class="container-fluid">
         <div class="row">
@@ -27,13 +33,23 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                     <h1 class="text-center"><?php echo $ticket->get_title() ?></h1>
                         <div class="row pt-3">
                             <div class="col-8">
-                                <?php if($department['owner_id'] === $_SESSION['user']->get_id() ||
-                                USER_TYPE === user_type::ADMIN): ?>
+                                <?php
+                                if(
+                                    USER_TYPE !== user_type::GUEST
+                                    &&
+                                    (
+                                        $current_dep->get_owner_id() === $_SESSION['user']->get_id()
+                                        ||
+                                        USER_TYPE === user_type::ADMIN
+                                    )
+                                ):
+                                    ?>
                                 <strong><a href="edit_ticket.php?id=<?php echo $ticket->get_id() ?>">Edit ticket</a></strong>
                                 <?php endif; ?>
                                 <h5 class="pb-0"><label for="description">Description</label></h5>
                                 <div><?php echo $ticket->get_description() ?></div>
                                 <h5 class="mt-4">Comments</h5>
+                                <?php if(USER_TYPE !== user_type::GUEST): ?>
                                 <form action="add_comment.php" method="POST">
                                     <div class="w-100 d-flex align-items-center">
                                         <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,9 +63,11 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                                     </div>
                                 </form>
                                 <?php
-                                    $comments_dao = new comments_dao(database_connection::get_instance()->get_resource());
+                                    endif;
+
+                                    $comments_dao = new comments_dao($db_resource);
                                     $comments = $comments_dao->get_by_ticket_id($ticket->get_id());
-                                    $user_dao = new user_dao(database_connection::get_instance()->get_resource());
+                                    $user_dao = new user_dao($db_resource);
                                     if($comments !== false) {
                                         foreach($comments as $comment):
                                             $user = $user_dao->get_by_id($comment->get_user_id());
@@ -68,9 +86,17 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                                     </div>
                                     <?php
 
-                                    if($department['owner_id'] === $_SESSION['user']->get_id() ||
-                                       $comment->get_user_id() === $_SESSION['user']->get_id() ||
-                                        USER_TYPE === user_type::ADMIN):
+                                    if(
+                                        USER_TYPE !== user_type::GUEST
+                                        &&
+                                        (
+                                            $current_dep->get_owner_id() === $_SESSION['user']->get_id()
+                                            ||
+                                            $comment->get_user_id() === $_SESSION['user']->get_id()
+                                            ||
+                                            USER_TYPE === user_type::ADMIN
+                                        )
+                                    ):
                                     ?>
                                     <div class="w-100 d-flex">
                                         <div class="ms-auto">
@@ -105,7 +131,7 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                                     <?php  ?>
                                     <div class="col-6 mt-3">
                                         <?php
-                                            echo $department['title'];
+                                            echo $current_dep->get_title();
                                         ?>
                                     </div>
                                     <div class="col-6 mt-3">
@@ -137,7 +163,7 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
 
                                     <div class="col-6 mt-3">
                                         <?php
-                                        $user_dao = new user_dao(database_connection::get_instance()->get_resource());
+                                        $user_dao = new user_dao($db_resource);
                                         if(empty($ticket->get_assignee_id()))
                                             echo "None";
                                         else {
@@ -152,7 +178,7 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
 
                                     <div class="col-6 mt-3">
                                         <?php
-                                        $user_dao = new user_dao(database_connection::get_instance()->get_resource());
+                                        $user_dao = new user_dao($db_resource);
                                         $user = $user_dao->get_by_id($ticket->get_reporter_id());
                                         echo $user->get_name() . " " . $user->get_surname();
                                         ?>
@@ -162,7 +188,7 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                                     </div>
                                     <div class="text-center col-12">
                                         <?php
-                                        $attachments_dao = new attachments_dao(database_connection::get_instance()->get_resource(), 'attachments/');
+                                        $attachments_dao = new attachments_dao($db_resource, 'attachments/');
                                         $attachment_paths = $attachments_dao->get_by_ticket_id($ticket->get_id());
                                         if($attachment_paths !== false) {
                                             foreach($attachment_paths as $path):
@@ -174,10 +200,21 @@ $department = $department_dao->get_by_id($ticket->get_department_id());
                                             else echo '<p class="readonly">No attachments</p>';?>
                                     </div>
                                     <?php
-                                        if(($department['owner_id'] === $_SESSION['user']->get_id() ||
-                                        $ticket->get_assignee_id() === $_SESSION['user']->get_id() ||
-                                        USER_TYPE === user_type::ADMIN) &&
-                                        empty($ticket->get_close_date())):
+                                        if(
+                                            USER_TYPE !== user_type::GUEST
+                                            &&
+                                            (
+                                                (
+                                                    $current_dep->get_owner_id() === $_SESSION['user']->get_id()
+                                                    ||
+                                                    $ticket->get_assignee_id() === $_SESSION['user']->get_id()
+                                                    ||
+                                                    USER_TYPE === user_type::ADMIN
+                                                )
+                                                &&
+                                                empty($ticket->get_close_date())
+                                            )
+                                        ):
                                     ?>
                                     <form class="d-flex" action="mark_as_done.php" method="POST">
                                         <input type="hidden" name="ticket_id" value="<?php echo $ticket->get_id() ?>">

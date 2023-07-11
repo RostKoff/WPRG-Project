@@ -22,6 +22,15 @@
 					<?php include('php/scripts/add_department.php') ?>
 					<div class="row pt-3">
 						<?php
+
+						//---
+						$user_dao = new user_dao(database_connection::get_instance()->get_resource());
+						$user = $user_dao->get_by_id(1);
+						if(!empty($user))
+							print_r($user);
+						else
+							echo 'Empty!';
+						//---
 						$departments_dao = new departments_dao(database_connection::get_instance()->get_resource());
 						if(($departments = $departments_dao->get_departments()) !== false && sizeof($departments) != 0)
 							foreach($departments as $department):

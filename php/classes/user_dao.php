@@ -1,10 +1,23 @@
 <?php
     require_once('php/classes/user.php');
-    class user_dao {
-        private $db_resource;
+    require_once('php/classes/db_dao.php');
+    class user_dao extends db_dao {
 
-        public function __construct($db_resource) {
-            $this->db_resource = $db_resource;
+        protected static function get_by_id_query() {
+            return 'SELECT id, name, surname, email 
+                    FROM users 
+                    WHERE id = ?';
+        }
+
+        protected static function assign_values($values) {
+            $user = new user();
+            return $user->
+            id(self::check_key('id', $values))->
+            name(self::check_key('name', $values))->
+            surname(self::check_key('surname', $values))->
+            email(self::check_key('email', $values))->
+            role(self::check_key('role', $values))->
+            password(self::check_key('password', $values));
         }
         function add_user($user) {
             try {
@@ -64,20 +77,22 @@
             }
         }
 
-        public function get_by_id($id) {
-            try {
-                $stmt = $this->db_resource->prepare('SELECT id, name, surname, email FROM users WHERE id = ?');
-                $stmt->bind_param('i', $id);
-                $stmt->execute();
-                $stmt->bind_result($id, $name, $surname, $email);
-                $stmt->store_result();
-                $user = new user();
-                $stmt->fetch();
-                $num_rows = $stmt->num_rows();
-                $stmt->close();
-                return $num_rows ? $user->id($id)->name($name)->surname($surname)->email($email) : false;
-            } catch(mysqli_sql_exception $e) {
-                return false;
-            }
-        }
+//        public function get_by_id($id) {
+//            try {
+//                $stmt = $this->db_resource->prepare('SELECT id, name, surname, email FROM users WHERE id = ?');
+//                $stmt->bind_param('i', $id);
+//                $stmt->execute();
+//                $stmt->bind_result($id, $name, $surname, $email);
+//                $stmt->store_result();
+//                $stmt->fetch();
+//                $num_rows = $stmt->num_rows();
+//                $stmt->close();
+//
+//                $user = new user();
+//                return $num_rows > 0 ? $user->id($id)->name($name)->surname($surname)->email($email) : null;
+//            } catch(Exception|Error $e) {
+//                error_log($e->getMessage());
+//                return null;
+//            }
+//        }
     }

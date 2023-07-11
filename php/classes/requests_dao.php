@@ -2,6 +2,14 @@
 
 class requests_dao extends db_dao
 {
+
+    protected static function get_by_id_query() {
+        return '';
+    }
+    protected static function assign_values($values) {
+        return null;
+    }
+
     public function already_exists($user_id, $department_id) {
         try {
         $stmt = $this->db_resource->prepare('SELECT * FROM requests_to_join WHERE user_id = ? AND department_id = ? ');

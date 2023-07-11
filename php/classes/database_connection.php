@@ -8,7 +8,8 @@
         private $connection_resource;
 
         private static $instance;
-        private function __constructor() {}
+        private function __construct() {}
+        private function __clone() {}
         private function connect() {
             try {
                 $this->connection_resource = new mysqli(self::$host, self::$username, self::$password, self::$dbname);
@@ -17,7 +18,6 @@
             }
             return true;
         }
-        private function __clone() {}
 
         public static function get_instance() {
             if (is_null(self::$instance)) {

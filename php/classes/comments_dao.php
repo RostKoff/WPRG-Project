@@ -2,6 +2,21 @@
 
 class comments_dao extends db_dao
 {
+
+    protected static function get_by_id_query() {
+        return 'SELECT id, content, user_id, ticket_id
+                FROM comments
+                WHERE id=?';
+    }
+    protected static function assign_values($values) {
+        $comment = new comment();
+        return $comment->
+        set_id(self::check_key('id', $values))->
+        set_content(self::check_key('content', $values))->
+        set_user_id(self::check_key('user_id', $values))->
+        set_ticket_id(self::check_key('ticket_id', $values));
+    }
+
     public function add($comment) {
         try {
             $stmt = $this->db_resource->prepare('INSERT INTO comments (content, ticket_id, user_id) VALUES (?,?,?)');

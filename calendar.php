@@ -9,13 +9,18 @@
         echo '<h1>Department not found!</h1>';
         return;
     }
+    $instance = database_connection::get_instance();
+    if(empty($instance))
+        echo '<h1>Error! Unable get information!</h1>';
+    $db_resource = $instance->get_resource();
 
-    $departments_dao = new departments_dao(database_connection::get_instance()->get_resource());
-    if(!$department = $departments_dao->get_by_id($_GET['id'])) {
+    $departments_dao = new departments_dao($db_resource);
+    $current_dep = $departments_dao->get_by_id($_GET['id']);
+    if(is_null($current_dep)) {
         echo '<h1>Department not found!</h1>';
         return;
     }
-    $ticket_dao = new ticket_dao(database_connection::get_instance()->get_resource());
+    $ticket_dao = new ticket_dao($db_resource);
     $tickets = $ticket_dao->get_by_dep_id($_GET['id'], true);
     $json_data = json_helper::tickets2json($tickets);
 ?>

@@ -11,8 +11,14 @@ $tickets_dao = new ticket_dao(database_connection::get_instance()->get_resource(
 $department_dao = new departments_dao(database_connection::get_instance()->get_resource());
 $ticket = $tickets_dao->get_by_id($_GET['id']);
 $department = $department_dao->get_by_id($ticket->get_department_id());
-if($department['owner_id'] !== $_SESSION['user']->get_id() &&
-    USER_TYPE !== user_type::ADMIN):
+if(
+    USER_TYPE === user_type::GUEST
+    ||
+    (
+        $department->get_owner_id() !== $_SESSION['user']->get_id() &&
+        USER_TYPE !== user_type::ADMIN
+    )
+):
     ?>
     <h1>Access denied!</h1>
 <?php else: ?>
@@ -62,7 +68,7 @@ if($department['owner_id'] !== $_SESSION['user']->get_id() &&
                                         <label for="start-date">Start date *</label>
                                     </div>
                                     <div class="col-6 mt-3">
-                                        <input type="date" id="start-date" value="<?php echo date("Y-m-d") ?>" name="start_date" required>
+                                        <input type="date" id="start-date" value="<?php echo $ticket->get_start_date() ?>" name="start_date" required>
                                     </div>
                                     <?php if(USER_TYPE === user_type::USER): ?>
                                         <div class="col-6 mt-3">

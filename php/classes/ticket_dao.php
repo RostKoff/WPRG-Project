@@ -2,6 +2,26 @@
 
 class ticket_dao extends db_dao {
 
+    protected static function get_by_id_query() {
+        return 'SELECT id, title, priority, department_id, reporter_id, assignee_id, start_date, due_date, close_date, description 
+                FROM tickets 
+                WHERE id = ?';
+    }
+    protected static function assign_values($values) {
+        $ticket = new ticket();
+        return $ticket->
+        set_id(self::check_key('id', $values))->
+        set_title(self::check_key('title', $values))->
+        set_priority(self::check_key('priority', $values))->
+        set_department_id(self::check_key('department_id', $values))->
+        set_reporter_id(self::check_key('reporter_id', $values))->
+        set_assignee_id(self::check_key('assignee_id', $values))->
+        set_start_date(self::check_key('start_date', $values))->
+        set_due_date(self::check_key('due_date', $values))->
+        set_close_date(self::check_key('close_date', $values))->
+        set_description(self::check_key('description', $values));
+    }
+
     public function add($ticket): bool
     {
         try {
@@ -32,25 +52,25 @@ class ticket_dao extends db_dao {
 
     }
 
-    public function get_by_id($id) {
-        try {
-            $stmt = $this->db_resource->prepare('SELECT id, title, priority, department_id, reporter_id, assignee_id, start_date, due_date, close_date, description FROM tickets WHERE id = ?');
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $stmt->bind_result($id, $title, $priority, $department_id, $reporter_id, $assignee_id, $start_date, $due_date, $close_date, $description);
-            $stmt->store_result();
-            $ticket = new ticket();
-            $stmt->fetch();
-            $num_rows = $stmt->num_rows();
-            $stmt->close();
-            return $num_rows ? $ticket->set_id($id)->set_title($title)->set_priority($priority)->set_department_id($department_id)
-                ->set_reporter_id($reporter_id)->set_assignee_id($assignee_id)->set_start_date($start_date)->set_due_date($due_date)
-                ->set_close_date($close_date)->set_description($description) : false;
-
-        } catch(mysqli_sql_exception $e) {
-            return false;
-        }
-    }
+//    public function get_by_id($id) {
+//        try {
+//            $stmt = $this->db_resource->prepare('SELECT id, title, priority, department_id, reporter_id, assignee_id, start_date, due_date, close_date, description FROM tickets WHERE id = ?');
+//            $stmt->bind_param('i', $id);
+//            $stmt->execute();
+//            $stmt->bind_result($id, $title, $priority, $department_id, $reporter_id, $assignee_id, $start_date, $due_date, $close_date, $description);
+//            $stmt->store_result();
+//            $ticket = new ticket();
+//            $stmt->fetch();
+//            $num_rows = $stmt->num_rows();
+//            $stmt->close();
+//            return $num_rows ? $ticket->set_id($id)->set_title($title)->set_priority($priority)->set_department_id($department_id)
+//                ->set_reporter_id($reporter_id)->set_assignee_id($assignee_id)->set_start_date($start_date)->set_due_date($due_date)
+//                ->set_close_date($close_date)->set_description($description) : false;
+//
+//        } catch(mysqli_sql_exception $e) {
+//            return false;
+//        }
+//    }
     public function get_next_id() {
         $query = "SHOW TABLE STATUS LIKE 'tickets'";
         $result = $this->db_resource->query($query);

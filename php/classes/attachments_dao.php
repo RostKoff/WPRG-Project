@@ -2,6 +2,18 @@
 
 class attachments_dao extends db_dao
 {
+    protected static function get_by_id_query() {
+        return 'SELECT id, path, ticket_id 
+                FROM attachments
+                WHERE id=?';
+    }
+    protected static function assign_values($values) {
+        $attachment = new attachment();
+        return $attachment->
+        set_id(self::check_key('id', $values))->
+        set_path(self::check_key('path', $values))->
+        set_ticket_id(self::check_key('ticket_id', $values));
+    }
     private $target_directory;
 
     public function __construct($db_resource, $target_directory) {

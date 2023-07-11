@@ -1,9 +1,19 @@
 <?php
-class departments_dao {
-    private $db_resource;
+class departments_dao extends db_dao {
 
-    public function __construct($db_resource) {
-        $this->db_resource = $db_resource;
+    public static function get_by_id_query(): string
+    {
+        return 'SELECT id, title, owner_id 
+                FROM departments 
+                WHERE id = ?';
+    }
+
+    public static function assign_values($values): department
+    {
+        $id = self::check_key('id', $values);
+        $title = self::check_key('title', $values);
+        $owner_id = self::check_key('owner_id', $values);
+        return new department($id, $title, $owner_id);
     }
 
     public function get_departments() {
@@ -36,19 +46,6 @@ class departments_dao {
         }
 
         return !($stmt->execute() === false);
-    }
-
-    public function get_by_id($id) {
-        try {
-            $stmt = $this->db_resource->prepare('SELECT id, title, owner_id FROM departments WHERE id = ?');
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
-            return $result->num_rows > 0 ? $result->fetch_assoc() : false;
-        } catch(mysqli_sql_exception $e) {
-            return false;
-        }
     }
 
     public function already_exists($title): bool
