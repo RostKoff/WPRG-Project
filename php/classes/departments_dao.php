@@ -1,14 +1,27 @@
 <?php
 class departments_dao extends db_dao {
 
-    public static function get_by_id_query(): string
+    protected static function get_by_id_query(): string
     {
         return 'SELECT id, title, owner_id 
                 FROM departments 
                 WHERE id = ?';
     }
+    protected static function add_query(): string
+    {
+        return 'INSERT INTO departments (title, owner_id)
+                VALUES (?,?)';
+    }
+    protected static function get_all_query(): string {
+        return 'SELECT id, title, owner_id 
+                FROM departments ';
+    }
+    protected static function delete_query(): string
+    {
+        return 'DELETE FROM departments WHERE id = ?';
+    }
 
-    public static function assign_values($values): department
+    protected static function assign_values($values): department
     {
         $id = self::check_key('id', $values);
         $title = self::check_key('title', $values);
@@ -16,15 +29,19 @@ class departments_dao extends db_dao {
         return new department($id, $title, $owner_id);
     }
 
-    public function get_departments() {
-        try {
-        $result = $this->db_resource->query('SELECT id, title FROM departments');
-        } catch(mysqli_sql_exception $e) {
-            return false;
-        }
-        return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : false;
-    }
+    /**
+     * @throws Exception
+     */
+    protected static function get_values($entity): array
+    {
+        if (!($entity instanceof department))
+            throw new Exception('departments_dao::get_values($entity): Argument #1 ($entity) must be an instance of the department class');
+        $values = [];
 
+        $values[] = $entity->get_title();
+        $values[] = $entity->get_owner_id();
+        return $values;
+    }
 
     public function get_specific_department($user_id) {
         $query = "SELECT d.owner_id, departments_id, d.title FROM departments_users
@@ -32,20 +49,6 @@ class departments_dao extends db_dao {
                              WHERE users_id = $user_id";
         $result = $this->db_resource->query($query);
         return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : false;
-    }
-
-    public function add_department($title, $owner_id = null): bool
-    {
-        if($owner_id != null) {
-            $stmt = $this->db_resource->prepare('INSERT INTO departments (title, owner_id) VALUES (?,?)');
-            $stmt->bind_param('si', $title, $owner_id);
-        }
-        else {
-            $stmt = $this->db_resource->prepare('INSERT INTO departments (title) VALUES (?)');
-            $stmt->bind_param('s', $title);
-        }
-
-        return !($stmt->execute() === false);
     }
 
     public function already_exists($title): bool

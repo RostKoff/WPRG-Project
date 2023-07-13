@@ -30,4 +30,4 @@
     $user = new user();
     $hashed_pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $user->name($_POST['name'])->surname($_POST['surname'])->email($_POST['email'])->password($hashed_pass);
-    $user_dao->add_user($user);
+    $user_dao->add($user);

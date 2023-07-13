@@ -37,7 +37,7 @@ $departments_dao = new departments_dao($db_resource);
             <div class="container">
                 <h1 class="text-center">Backlog</h1>
                 <div class="row pt-3">
-                    <?php if(empty($tickets)): ?>
+                    <?php if(is_null($tickets)): ?>
                     <h3 class="text-center">Backlog is clear</h3>
                     <?php else: ?>
                     <table>

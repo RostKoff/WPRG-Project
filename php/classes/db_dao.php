@@ -4,10 +4,13 @@ abstract class db_dao
 {
     protected $db_resource;
 
-    protected static abstract function get_by_id_query();
-
+     protected static abstract function get_by_id_query();
+     protected static abstract function add_query();
+     protected static abstract function get_all_query();
+     protected static abstract function delete_query();
 
     protected static abstract function assign_values($values);
+    protected static abstract function get_values($entity);
     protected static function check_key($key, $arr) {
         return !array_key_exists($key, $arr) ? null : $arr[$key];
     }
@@ -28,6 +31,42 @@ abstract class db_dao
         } catch (Exception|Error $e) {
             error_log($e->getMessage());
             return null;
+        }
+    }
+    public function add($entity): bool
+    {
+        try {
+            $stmt = $this->db_resource->prepare($this::add_query());
+            $stmt->execute($this->get_values($entity));
+            return true;
+        } catch (Exception|Error $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+    public function get_all(): ?array {
+        try {
+            $results = $this->db_resource->query($this->get_all_query());
+            $arr = [];
+            while($result = $results->fetch_assoc()) {
+                $arr[] = $this->assign_values($result);
+            }
+            return $arr;
+        } catch (Exception|Error $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+    public function delete($id): bool
+    {
+        try {
+            $stmt = $this->db_resource->prepare($this->delete_query());
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            return true;
+        } catch (Exception|Error $e) {
+            error_log($e->getMessage());
+            return false;
         }
     }
 }

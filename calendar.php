@@ -22,6 +22,10 @@
     }
     $ticket_dao = new ticket_dao($db_resource);
     $tickets = $ticket_dao->get_by_dep_id($_GET['id'], true);
+    if(is_null($tickets)) {
+        echo '<h1>Unable to retrieve information</h1>';
+        return;
+    }
     $json_data = json_helper::tickets2json($tickets);
 ?>
 <title>Calendar</title>

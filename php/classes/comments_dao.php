@@ -3,12 +3,28 @@
 class comments_dao extends db_dao
 {
 
-    protected static function get_by_id_query() {
+    protected static function get_by_id_query(): string
+    {
         return 'SELECT id, content, user_id, ticket_id
                 FROM comments
                 WHERE id=?';
     }
-    protected static function assign_values($values) {
+    protected static function add_query(): string
+    {
+        return 'INSERT INTO comments (content, user_id, ticket_id) 
+                VALUES (?,?,?)';
+    }
+    protected static function get_all_query() {
+        return 'SELECT id, content, user_id, ticket_id
+                FROM comments';
+    }
+    protected static function delete_query(): string
+    {
+        return 'DELETE FROM comments WHERE id = ?';
+    }
+
+    protected static function assign_values($values): comment
+    {
         $comment = new comment();
         return $comment->
         set_id(self::check_key('id', $values))->
@@ -17,18 +33,19 @@ class comments_dao extends db_dao
         set_ticket_id(self::check_key('ticket_id', $values));
     }
 
-    public function add($comment) {
-        try {
-            $stmt = $this->db_resource->prepare('INSERT INTO comments (content, ticket_id, user_id) VALUES (?,?,?)');
-            $content = $comment->get_content();
-            $ticket_id =  $comment->get_ticket_id();
-            $user_id = $comment->get_user_id();
-            $stmt->bind_param('sii', $content, $ticket_id, $user_id);
-            $stmt->execute();
-        } catch (mysqli_sql_exception $e) {
-            return false;
-        }
-        return true;
+    /**
+     * @throws Exception
+     */
+    protected static function get_values($entity): array
+    {
+        if (!($entity instanceof comment))
+            throw new Exception('comments_dao::get_values($entity): Argument #1 ($entity) must be an instance of the comment class');
+        $values = [];
+
+        $values[] = $entity->get_content();
+        $values[] = $entity->get_user_id();
+        $values[] = $entity->get_ticket_id();
+        return $values;
     }
 
     public function get_by_ticket_id($id) {
@@ -45,17 +62,6 @@ class comments_dao extends db_dao
                 $comments[] = $comment;
             }
             return count($comments) > 0 ? $comments : false;
-        } catch(mysqli_sql_exception $e) {
-            return false;
-        }
-    }
-
-    public function delete_by_id($id) {
-        try {
-            $stmt = $this->db_resource->prepare('DELETE FROM comments WHERE id = ?');
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            return true;
         } catch(mysqli_sql_exception $e) {
             return false;
         }
